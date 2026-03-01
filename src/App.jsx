@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 // Токен и канал берутся из переменных окружения Vercel/Vite
 // Задайте их в настройках проекта на Vercel:
@@ -54,34 +54,6 @@ async function sendToTelegram(ad) {
     const err = await res.json()
     throw new Error(err.description || 'Ошибка Telegram API')
   }
-}
-
-// ─── Стили ───────────────────────────────────────────────────────────────────
-
-const inputBase = {
-  width: '100%',
-  padding: '14px 18px',
-  border: '1px solid #e2e8f0',
-  borderRadius: 16,
-  fontSize: 16,
-  fontFamily: 'inherit',
-  color: '#1e293b',
-  background: '#fff',
-  outline: 'none',
-  transition: 'all 0.2s ease',
-  boxSizing: 'border-box',
-  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-}
-
-const focusHandlers = {
-  onFocus: e => {
-    e.target.style.borderColor = 'var(--primary)';
-    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
-  },
-  onBlur: e => {
-    e.target.style.borderColor = '#e2e8f0';
-    e.target.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
-  },
 }
 
 // ─── Компоненты ───────────────────────────────────────────────────────────────
@@ -180,7 +152,7 @@ function Step1({ form, set, errors }) {
             </div>
           </Field>
         </div>
-        <div className="col-span-1 text-navy-950 font-bold">
+        <div className="col-span-1">
           <Field label="Бюджет (до)" error={errors.budget}>
             <Inp
               value={form.budget}
@@ -295,11 +267,13 @@ function Step2({ form, set, errors }) {
 // ─── Обёртка страницы ─────────────────────────────────────────────────────────
 
 function Shell({ children, setPage }) {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="fixed top-0 w-full z-50 border-b border-white/5 bg-white/80 dark:bg-navy-950/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setPage('home')}>
+          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => { setPage('home'); setIsOpen(false); }}>
             <span className="font-display text-2xl font-bold tracking-tight text-navy-950 dark:text-white">
               Ev<span className="text-primary">Bulsun</span>
             </span>
@@ -310,19 +284,60 @@ function Shell({ children, setPage }) {
 
           <nav className="hidden md:flex items-center space-x-8 text-[11px] font-bold tracking-widest uppercase text-gray-400 dark:text-gray-500">
             <a className="hover:text-primary transition-colors" href="#">Объекты</a>
-            <a className="hover:text-primary transition-colors" href="#">Как это работает</a>
+            <button
+              className="hover:text-primary transition-colors uppercase"
+              onClick={() => {
+                setPage('home');
+                setIsOpen(false);
+                setTimeout(() => {
+                  document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+            >
+              Как это работает
+            </button>
             <a className="hover:text-primary transition-colors" href="#">Консьерж</a>
           </nav>
 
-          <div className="flex items-center space-x-6">
-            <button className="text-[11px] font-bold uppercase tracking-widest hover:text-primary transition-colors">Войти</button>
+          <div className="flex items-center space-x-4">
             <button
-              onClick={() => { window.scrollTo(0, 0); setPage('form'); }}
-              className="bg-primary text-white px-8 py-3 rounded-full text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 transition-all hover:scale-[1.05]"
+              onClick={() => { window.scrollTo(0, 0); setPage('form'); setIsOpen(false); }}
+              className="bg-primary text-white px-6 md:px-8 py-2.5 md:py-3 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 transition-all hover:scale-[1.05]"
             >
               Оставить заявку
             </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden w-10 h-10 flex items-center justify-center text-navy-950 dark:text-white"
+            >
+              <span className="material-symbols-outlined text-2xl">
+                {isOpen ? 'close' : 'menu'}
+              </span>
+            </button>
           </div>
+        </div>
+
+        {/* Планшетное/Мобильное меню */}
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-navy-950 border-b border-gray-100 dark:border-white/5 ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+          <nav className="flex flex-col p-6 space-y-6 text-[11px] font-bold tracking-[0.2em] uppercase text-gray-500 dark:text-gray-400">
+            <a className="hover:text-primary transition-colors" href="#" onClick={() => setIsOpen(false)}>Объекты</a>
+            <button
+              className="text-left hover:text-primary transition-colors uppercase"
+              onClick={() => {
+                setPage('home');
+                setIsOpen(false);
+                setTimeout(() => {
+                  document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+            >
+              Как это работает
+            </button>
+            <a className="hover:text-primary transition-colors" href="#" onClick={() => setIsOpen(false)}>Консьерж</a>
+            <div className="pt-4 border-t border-gray-50 dark:border-white/5 flex gap-4">
+              <button className="text-primary tracking-widest py-2">Войти</button>
+            </div>
+          </nav>
         </div>
       </header>
 
@@ -354,73 +369,11 @@ function Shell({ children, setPage }) {
   )
 }
 
-// ─── Главный компонент ────────────────────────────────────────────────────────
+// ─── Главная страница ───────────────────────────────────────────────────────
 
-const emptyForm = {
-  type: 'rent', city: '', district: '', rooms: '1',
-  budget: '', currency: 'USD', description: '', urgent: false,
-  contactType: 'telegram', contactValue: '',
-}
-
-export default function App() {
-  const [page, setPage] = useState('home')   // home | form | success | error
-  const [step, setStep] = useState(1)
-  const [sending, setSending] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
-  const [form, setFormState] = useState(emptyForm)
-  const [errors, setErrors] = useState({})
-
-  const set = (k, v) => setFormState(f => ({ ...f, [k]: v }))
-
-  const reset = () => {
-    setFormState(emptyForm)
-    setErrors({})
-    setStep(1)
-    setPage('home')
-  }
-
-  const validateStep1 = () => {
-    const e = {}
-    if (!form.city) e.city = 'Выберите город'
-    if (!form.budget || isNaN(form.budget.replace(/\s/g, ''))) e.budget = 'Укажите бюджет цифрами'
-    if (form.description.trim().length < 20) e.description = 'Напишите хотя бы пару предложений'
-    return e
-  }
-
-  const validateStep2 = () => {
-    const e = {}
-    if (!form.contactValue.trim()) e.contactValue = 'Укажите контакт для связи'
-    if (form.contactType === 'telegram' && form.contactValue && !form.contactValue.startsWith('@'))
-      e.contactValue = 'Telegram username должен начинаться с @'
-    return e
-  }
-
-  const handleNext = () => {
-    const e = validateStep1()
-    if (Object.keys(e).length) { setErrors(e); return }
-    setErrors({})
-    setStep(2)
-  }
-
-  const handleSubmit = async () => {
-    const e = validateStep2()
-    if (Object.keys(e).length) { setErrors(e); return }
-    setSending(true)
-    try {
-      await sendToTelegram(form)
-      setPage('success')
-    } catch (err) {
-      setErrorMsg(err.message)
-      setPage('error')
-    } finally {
-      setSending(false)
-    }
-  }
-
-  // ── Главная страница ───────────────────────────────────────────────────────
-
-  if (page === 'home') return (
-    <Shell setPage={setPage}>
+function Home({ setPage }) {
+  return (
+    <>
       {/* Hero Section */}
       <section className="relative h-[90vh] min-h-[700px] flex items-center justify-center -mt-20 hero-gradient overflow-hidden">
         <div className="absolute inset-0 bg-navy-950/20"></div>
@@ -455,7 +408,7 @@ export default function App() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-32 px-6 bg-background-light dark:bg-background-dark">
+      <section id="how-it-works" className="py-32 px-6 bg-background-light dark:bg-background-dark">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24">
             <h2 className="font-display text-4xl md:text-6xl mb-8 dark:text-white">Как это работает</h2>
@@ -547,150 +500,204 @@ export default function App() {
           </div>
         </div>
       </section>
-    </Shell>
+    </>
   )
+}
 
-  // ── Форма ─────────────────────────────────────────────────────────────────
+// ─── Главный компонент ────────────────────────────────────────────────────────
 
-  if (page === 'form') return (
-    <Shell>
-      <div className="container" style={{ maxWidth: 640, margin: '0 auto', padding: '60px 24px 100px' }}>
-        <button onClick={reset} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer', fontSize: 16, fontFamily: 'inherit', padding: 0, marginBottom: 32, display: 'flex', alignItems: 'center', gap: 8 }}>
-          ← Назад на главную
-        </button>
+const emptyForm = {
+  type: 'rent', city: '', district: '', rooms: '1',
+  budget: '', currency: 'USD', description: '', urgent: false,
+  contactType: 'telegram', contactValue: '',
+}
 
-        {/* Прогресс */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 40, background: '#fff', padding: '12px 20px', borderRadius: 100, border: '1px solid #f1f5f9', width: 'fit-content' }}>
-          {[1, 2].map(s => (
-            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: s <= step ? 'var(--primary)' : '#f1f5f9',
-                color: s <= step ? '#fff' : '#94a3b8',
-                fontWeight: 700,
-                fontSize: 12,
-                transition: 'all .3s'
-              }}>
-                {s < step ? '✓' : s}
-              </div>
-              <span style={{ fontSize: 14, color: s === step ? '#1e293b' : '#94a3b8', fontWeight: s === step ? 700 : 500 }}>
-                {s === 1 ? 'Что ищете' : 'Контакт'}
-              </span>
-              {s < 2 && <div style={{ width: 24, height: 2, background: step > 1 ? 'var(--primary)' : '#f1f5f9', borderRadius: 2, transition: 'background .3s' }} />}
+export default function App() {
+  const [page, setPage] = useState('home')   // home | form | success | error
+  const [step, setStep] = useState(1)
+  const [sending, setSending] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+  const [form, setFormState] = useState(emptyForm)
+  const [errors, setErrors] = useState({})
+
+  const set = (k, v) => setFormState(f => ({ ...f, [k]: v }))
+
+  const reset = () => {
+    setFormState(emptyForm)
+    setErrors({})
+    setStep(1)
+    setPage('home')
+  }
+
+  const validateStep1 = () => {
+    const e = {}
+    if (!form.city) e.city = 'Выберите город'
+    if (!form.budget || isNaN(form.budget.replace(/\s/g, ''))) e.budget = 'Укажите бюджет цифрами'
+    if (form.description.trim().length < 20) e.description = 'Напишите хотя бы пару предложений'
+    return e
+  }
+
+  const validateStep2 = () => {
+    const e = {}
+    if (!form.contactValue.trim()) e.contactValue = 'Укажите контакт для связи'
+    if (form.contactType === 'telegram' && form.contactValue && !form.contactValue.startsWith('@'))
+      e.contactValue = 'Telegram username должен начинаться с @'
+    return e
+  }
+
+  const handleNext = () => {
+    const e = validateStep1()
+    if (Object.keys(e).length) { setErrors(e); return }
+    setErrors({})
+    setStep(2)
+  }
+
+  const handleSubmit = async () => {
+    const e = validateStep2()
+    if (Object.keys(e).length) { setErrors(e); return }
+    setSending(true)
+    try {
+      await sendToTelegram(form)
+      setPage('success')
+    } catch (err) {
+      setErrorMsg(err.message)
+      setPage('error')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  if (page === 'home') {
+    return (
+      <Shell setPage={setPage}>
+        <Home setPage={setPage} />
+      </Shell>
+    )
+  }
+
+  if (page === 'form') {
+    return (
+      <Shell setPage={setPage}>
+        <div className="max-w-2xl mx-auto px-6 py-24">
+          <button onClick={reset} className="text-primary font-bold flex items-center gap-2 mb-12 hover:translate-x-[-4px] transition-transform">
+            <span className="material-symbols-outlined">arrow_back</span> Назад на главную
+          </button>
+
+          <div className="bg-white dark:bg-navy-950 rounded-[2.5rem] border border-gray-100 dark:border-white/5 p-8 md:p-12 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gray-50 dark:bg-white/5">
+              <div
+                className="h-full bg-primary transition-all duration-500"
+                style={{ width: `${(step / 2) * 100}%` }}
+              ></div>
             </div>
-          ))}
-        </div>
 
-        <div style={{ background: '#fff', borderRadius: 28, padding: '40px', border: '1px solid #f1f5f9', boxShadow: '0 20px 40px rgba(0,0,0,0.04)' }}>
-          <h2 style={{ margin: '0 0 32px', fontSize: 28, fontWeight: 800, color: '#1e293b', letterSpacing: '-0.02em' }}>
-            {step === 1 ? 'Опишите, что ищёте' : 'Как с вами связаться?'}
-          </h2>
+            <div className="flex justify-between items-center mb-12">
+              <h2 className="font-display text-3xl dark:text-white">
+                {step === 1 ? 'Опишите ваш запрос' : 'Контактные данные'}
+              </h2>
+              <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Шаг {step} из 2</span>
+            </div>
 
-          {step === 1
-            ? <Step1 form={form} set={set} errors={errors} />
-            : <Step2 form={form} set={set} errors={errors} />
-          }
+            {step === 1 ? <Step1 form={form} set={set} errors={errors} /> : <Step2 form={form} set={set} errors={errors} />}
 
-          <div style={{ display: 'flex', gap: 16, marginTop: 40 }}>
-            {step === 2 && (
+            <div className="flex gap-4 mt-12">
+              {step === 2 && (
+                <button
+                  onClick={() => setStep(1)}
+                  className="flex-1 px-8 py-4 rounded-full border border-gray-200 dark:border-white/10 text-gray-500 font-bold uppercase tracking-widest text-[11px] hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
+                >
+                  Назад
+                </button>
+              )}
               <button
-                onClick={() => { setErrors({}); setStep(1) }}
-                className="btn-ghost"
-                style={{ flex: 1 }}
+                onClick={step === 1 ? handleNext : handleSubmit}
+                disabled={sending}
+                className="flex-[2] bg-primary text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-[11px] gold-shimmer shadow-lg shadow-primary/20 disabled:opacity-50"
               >
-                ← Назад
+                {sending ? 'Отправка...' : step === 1 ? 'Далее' : 'Разместить запрос'}
               </button>
-            )}
-            <button
-              onClick={step === 1 ? handleNext : handleSubmit}
-              disabled={sending}
-              className="btn-primary"
-              style={{ flex: 2, justifyContent: 'center', background: sending ? '#a5b4fc' : 'var(--primary)' }}
-            >
-              {sending ? 'Отправляю…' : step === 1 ? 'Далее →' : 'Опубликовать запрос 📢'}
+            </div>
+          </div>
+        </div>
+      </Shell>
+    )
+  }
+
+  if (page === 'success') {
+    return (
+      <Shell setPage={setPage}>
+        <div className="max-w-3xl mx-auto px-6 py-24 text-center">
+          <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-10 animate-fade">
+            <span className="material-symbols-outlined text-primary text-5xl">check_circle</span>
+          </div>
+          <h2 className="font-display text-4xl md:text-5xl mb-6 dark:text-white animate-fade" style={{ animationDelay: '0.1s' }}>Запрос опубликован!</h2>
+          <div className="h-px w-24 bg-primary/50 mx-auto mb-10 animate-fade" style={{ animationDelay: '0.2s' }}></div>
+          <p className="text-gray-500 dark:text-gray-400 text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed animate-fade" style={{ animationDelay: '0.3s' }}>
+            Ваше объявление уже появилось в закрытом Telegram-канале. Владельцы недвижимости скоро свяжутся с вами напрямую.
+          </p>
+
+          <div className="bg-primary/5 dark:bg-primary/[0.03] border border-primary/20 p-8 rounded-3xl mb-12 max-w-2xl mx-auto text-left flex gap-6 items-center animate-fade" style={{ animationDelay: '0.4s' }}>
+            <div className="w-12 h-12 bg-white dark:bg-navy-900 rounded-full flex items-center justify-center shrink-0 shadow-sm border border-primary/10">
+              <span className="material-symbols-outlined text-primary text-2xl">lightbulb</span>
+            </div>
+            <p className="text-sm dark:text-gray-300 leading-relaxed">
+              <strong className="text-primary">Совет:</strong> Пока вы ждете предложений, вы можете подписаться на наш канал, чтобы следить за другими запросами и обновлениями рынка.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade" style={{ animationDelay: '0.5s' }}>
+            <a href={`https://t.me/${TELEGRAM_CHANNEL_ID.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
+              className="bg-primary text-white px-10 py-4 rounded-full text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 flex items-center justify-center gap-3">
+              Открыть Telegram
+              <span className="material-symbols-outlined text-xl">send</span>
+            </a>
+            <button onClick={reset} className="px-10 py-4 rounded-full text-[11px] font-bold uppercase tracking-widest border border-gray-200 dark:border-white/10 hover:border-primary/50 transition-all dark:text-gray-400">
+              На главную
             </button>
           </div>
         </div>
-      </div>
-    </Shell>
-  )
+      </Shell>
+    )
+  }
 
-  // ── Успех ────────────────────────────────────────────────────────────────
-
-  if (page === 'success') return (
-    <Shell setPage={setPage}>
-      <div className="max-w-3xl mx-auto px-6 py-24 text-center">
-        <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-10 animate-fade">
-          <span className="material-symbols-outlined text-primary text-5xl">check_circle</span>
-        </div>
-        <h2 className="font-display text-4xl md:text-5xl mb-6 dark:text-white animate-fade" style={{ animationDelay: '0.1s' }}>Запрос опубликован!</h2>
-        <div className="h-px w-24 bg-primary/50 mx-auto mb-10 animate-fade" style={{ animationDelay: '0.2s' }}></div>
-        <p className="text-gray-500 dark:text-gray-400 text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed animate-fade" style={{ animationDelay: '0.3s' }}>
-          Ваше объявление уже появилось в закрытом Telegram-канале. Владельцы недвижимости скоро свяжутся с вами напрямую.
-        </p>
-
-        <div className="bg-primary/5 dark:bg-primary/[0.03] border border-primary/20 p-8 rounded-3xl mb-12 max-w-2xl mx-auto text-left flex gap-6 items-center animate-fade" style={{ animationDelay: '0.4s' }}>
-          <div className="w-12 h-12 bg-white dark:bg-navy-900 rounded-full flex items-center justify-center shrink-0 shadow-sm border border-primary/10">
-            <span className="material-symbols-outlined text-primary text-2xl">lightbulb</span>
+  if (page === 'error') {
+    return (
+      <Shell setPage={setPage}>
+        <div className="max-w-2xl mx-auto px-6 py-24 text-center">
+          <div className="w-20 h-20 bg-red-50 dark:bg-red-950/20 rounded-full flex items-center justify-center mx-auto mb-10">
+            <span className="material-symbols-outlined text-red-500 text-4xl">error</span>
           </div>
-          <p className="text-sm dark:text-gray-300 leading-relaxed">
-            <strong className="text-primary">Совет:</strong> Пока вы ждете предложений, вы можете подписаться на наш канал, чтобы следить за другими запросами и обновлениями рынка.
-          </p>
-        </div>
+          <h2 className="font-display text-3xl mb-6 dark:text-white">Не удалось отправить</h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-10">При публикации запроса в Telegram произошла техническая ошибка.</p>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade" style={{ animationDelay: '0.5s' }}>
-          <a href={`https://t.me/${TELEGRAM_CHANNEL_ID.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
-            className="bg-primary text-white px-10 py-4 rounded-full text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 flex items-center justify-center gap-3">
-            Открыть Telegram
-            <span className="material-symbols-outlined text-xl">send</span>
-          </a>
-          <button onClick={reset} className="px-10 py-4 rounded-full text-[11px] font-bold uppercase tracking-widest border border-gray-200 dark:border-white/10 hover:border-primary/50 transition-all dark:text-gray-400">
-            На главную
+          {errorMsg && (
+            <div className="bg-red-50 dark:bg-red-950/10 border border-red-100 dark:border-red-900/40 p-6 rounded-2xl mb-10 text-left">
+              <div className="text-[10px] uppercase tracking-widest font-bold text-red-400 mb-2">Детали ошибки</div>
+              <code className="text-xs text-red-600 dark:text-red-400 break-all family-mono leading-relaxed">{errorMsg}</code>
+            </div>
+          )}
+
+          <div className="bg-background-light dark:bg-navy-950/50 border border-gray-100 dark:border-white/5 p-8 rounded-3xl text-left mb-12">
+            <h4 className="text-sm font-bold uppercase tracking-widest text-navy-950 dark:text-gray-100 mb-6">Действие не выполнено</h4>
+            <p className="text-sm text-gray-400 leading-relaxed mb-6 italic">
+              "Качество — это когда возвращается покупатель, а не товар. Мы стремимся к совершенству в каждом запросе."
+            </p>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-gray-400 border-t border-gray-100 dark:border-white/5 pt-6">
+              Пожалуйста, проверьте настройки API и попробуйте позже.
+            </div>
+          </div>
+
+          <button
+            onClick={() => { setPage('form'); setStep(2) }}
+            className="bg-primary text-white px-10 py-4 rounded-full text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 flex items-center justify-center gap-3 mx-auto"
+          >
+            <span className="material-symbols-outlined text-xl">undo</span>
+            Попробовать снова
           </button>
         </div>
-      </div>
-    </Shell>
-  )
+      </Shell>
+    )
+  }
 
-  if (page === 'error') return (
-    <Shell setPage={setPage}>
-      <div className="max-w-2xl mx-auto px-6 py-24 text-center">
-        <div className="w-20 h-20 bg-red-50 dark:bg-red-950/20 rounded-full flex items-center justify-center mx-auto mb-10">
-          <span className="material-symbols-outlined text-red-500 text-4xl">error</span>
-        </div>
-        <h2 className="font-display text-3xl mb-6 dark:text-white">Не удалось отправить</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-10">При публикации запроса в Telegram произошла техническая ошибка.</p>
-
-        {errorMsg && (
-          <div className="bg-red-50 dark:bg-red-950/10 border border-red-100 dark:border-red-900/40 p-6 rounded-2xl mb-10 text-left">
-            <div className="text-[10px] uppercase tracking-widest font-bold text-red-400 mb-2">Детали ошибки</div>
-            <code className="text-xs text-red-600 dark:text-red-400 break-all family-mono leading-relaxed">{errorMsg}</code>
-          </div>
-        )}
-
-        <div className="bg-background-light dark:bg-navy-950/50 border border-gray-100 dark:border-white/5 p-8 rounded-3xl text-left mb-12">
-          <h4 className="text-sm font-bold uppercase tracking-widest text-navy-950 dark:text-gray-100 mb-6">Действие не выполнено</h4>
-          <p className="text-sm text-gray-400 leading-relaxed mb-6 italic">
-            "Качество — это когда возвращается покупатель, а не товар. Мы стремимся к совершенству в каждом запросе."
-          </p>
-          <div className="text-[10px] uppercase tracking-[0.2em] text-gray-400 border-t border-gray-100 dark:border-white/5 pt-6">
-            Пожалуйста, проверьте настройки API и попробуйте позже.
-          </div>
-        </div>
-
-        <button
-          onClick={() => { setPage('form'); setStep(2) }}
-          className="bg-primary text-white px-10 py-4 rounded-full text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 flex items-center justify-center gap-3 mx-auto"
-        >
-          <span className="material-symbols-outlined text-xl">undo</span>
-          Попробовать снова
-        </button>
-      </div>
-    </Shell>
-  )
+  return null
 }
