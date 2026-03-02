@@ -19,6 +19,7 @@ const TRANSLATIONS = {
     nav_concierge: 'Консьерж',
     nav_cta: 'Оставить заявку',
     nav_login: 'Войти',
+    nav_slogan: 'Жизнь на ваших условиях',
     hero_badge: 'Реверсивный маркетплейс',
     hero_title: 'Найдите свою идеальную',
     hero_title_italic: 'обитель',
@@ -110,6 +111,15 @@ const TRANSLATIONS = {
     contact_tg_hint: '@username — не раскрывает номер телефона',
     contact_wa_hint: 'Номер с кодом страны',
     contact_mail_hint: 'Владельцы напишут письмо',
+    seo_title: 'EvBulsun | Найти жильё в Турции — Реверсивный маркетплейс',
+    seo_desc: 'Ищете аренду или покупку жилья в Стамбуле, Анталье, Аланье? Опишите запрос — владельцы и агенты найдут вас напрямую. Бесплатно, без регистрации.',
+    seo_block_p1: 'Ищете идеальное жилье в Анталье? EvBulsun предлагает уникальный подход к поиску недвижимости. Вместо того чтобы листать бесконечные списки, вы просто описываете свои пожелания, и владельцы сами находят вас.',
+    seo_block_p2: 'Наш сервис охватывает все популярные запросы:',
+    seo_block_li1: 'Анталья сатлык дайре (Antalya satılık daire) — покупка апартаментов в лучших районах.',
+    seo_block_li2: 'Аренда квартир в Коньяалты и Ларе на длительный срок.',
+    seo_block_li3: 'Инвестиции в недвижимость Турции с высокой доходностью.',
+    seo_block_li4: 'Эксклюзивные виллы и пентхаусы, недоступные на открытых площадках.',
+    seller_img_alt: 'Современная роскошная архитектура в Анталье',
   },
   en: {
     nav_objects: 'Properties',
@@ -117,6 +127,7 @@ const TRANSLATIONS = {
     nav_concierge: 'Concierge',
     nav_cta: 'Post Request',
     nav_login: 'Login',
+    nav_slogan: 'Life on your terms',
     hero_badge: 'Reverse Marketplace',
     hero_title: 'Find your perfect',
     hero_title_italic: 'dwelling',
@@ -208,6 +219,15 @@ const TRANSLATIONS = {
     contact_tg_hint: '@username — does not reveal phone number',
     contact_wa_hint: 'Number with country code',
     contact_mail_hint: 'Owners will write an email',
+    seo_title: 'EvBulsun | Find Housing in Turkey — Reverse Marketplace',
+    seo_desc: 'Looking for rental or property in Istanbul, Antalya, Alanya? Describe your needs — owners contact you directly. Free, no registration.',
+    seo_block_p1: 'Looking for the perfect home in Antalya? EvBulsun offers a unique approach to real estate search. Instead of scrolling through endless listings, you simply describe your wishes, and owners find you.',
+    seo_block_p2: 'Our service covers all popular requests:',
+    seo_block_li1: 'Antalya apartments for sale — buying apartments in the best areas.',
+    seo_block_li2: 'Rent apartments in Konyaalti and Lara for the long term.',
+    seo_block_li3: 'Real estate investment in Turkey with high returns.',
+    seo_block_li4: 'Exclusive villas and penthouses not available on public platforms.',
+    seller_img_alt: 'Modern luxury architecture in Antalya',
   },
   tr: {
     nav_objects: 'Mülkler',
@@ -215,6 +235,7 @@ const TRANSLATIONS = {
     nav_concierge: 'Concierge',
     nav_cta: 'Talep Bırak',
     nav_login: 'Giriş Yap',
+    nav_slogan: 'Kendi şartlarınızda yaşam',
     hero_badge: 'Tersine Pazaryeri',
     hero_title: 'Mükemmel evinizi',
     hero_title_italic: 'bulun',
@@ -306,6 +327,15 @@ const TRANSLATIONS = {
     contact_tg_hint: '@username — telefon numarasını göstermez',
     contact_wa_hint: 'Ülke kodu ile numara',
     contact_mail_hint: 'Sahipleri e-posta gönderecektir',
+    seo_title: 'EvBulsun | Antalya\'da Premium Gayrimenkul',
+    seo_desc: 'Antalya\'da tersine emlak pazaryeri. Lara, Konyaaltı ve diğer bölgelerde hayalinizdeki daireyi veya villayı doğrudan sahiplerinden bulun.',
+    seo_block_p1: 'Antalya\'da mükemmel evi mi arıyorsunuz? EvBulsun emlak arama konusunda benzersiz bir yaklaşım sunuyor. Sonsuz ilanlar arasında kaybolmak yerine, dileklerinizi tarif edersiniz ve ev sahipleri sizi bulur.',
+    seo_block_p2: 'Hizmetimiz tüm popüler talepleri kapsar:',
+    seo_block_li1: 'Antalya satılık daire — en iyi bölgelerde daire sahibi olun.',
+    seo_block_li2: 'Konyaaltı ve Lara\'da uzun dönem kiralık daireler.',
+    seo_block_li3: 'Türkiye\'de yüksek getirili gayrimenkul yatırımı.',
+    seo_block_li4: 'Kamuya açık platformlarda bulunmayan özel villalar ve penthouse daireler.',
+    seller_img_alt: 'Antalya\'da modern lüks mimari',
   }
 }
 
@@ -606,7 +636,7 @@ function Shell({ children, setPage, lang, setLang }) {
               Ev<span className="text-primary">Bulsun</span>
             </span>
             <span className="hidden lg:block text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400 mt-1 pl-4 border-l border-gray-200 dark:border-gray-800">
-              Жизнь на ваших условиях
+              {t('nav_slogan')}
             </span>
           </div>
 
@@ -824,7 +854,8 @@ function Home({ setPage, lang }) {
         <div className="max-w-7xl mx-auto">
           <div className="relative bg-navy-950 rounded-[3rem] overflow-hidden p-12 md:p-24 lg:p-32 text-center md:text-left flex flex-col items-center justify-center min-h-[500px]">
             <img
-              alt="Modern luxury architecture"
+              alt={t('seller_img_alt')}
+              loading="lazy"
               className="absolute inset-0 w-full h-full object-cover opacity-20 transition-transform duration-[10s] hover:scale-110"
               src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
             />
@@ -855,6 +886,34 @@ function Home({ setPage, lang }) {
           </div>
         </div>
       </section>
+
+      {/* SEO Block Section */}
+      <section id="seo-content" className="pb-32 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white dark:bg-navy-950/20 border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-10 md:p-16">
+            <h2 className="font-display text-2xl md:text-3xl mb-8 dark:text-white">
+              {t('seo_title')}
+            </h2>
+            <div className="prose prose-sm dark:prose-invert max-w-none text-gray-500 dark:text-gray-400 font-light leading-relaxed">
+              <p className="mb-6">{t('seo_block_p1')}</p>
+              <p className="mb-6 font-medium">{t('seo_block_p2')}</p>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 list-none p-0">
+                {[
+                  t('seo_block_li1'),
+                  t('seo_block_li2'),
+                  t('seo_block_li3'),
+                  t('seo_block_li4')
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="material-symbols-outlined text-primary text-xl">stat_check</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   )
 }
@@ -875,6 +934,23 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState('')
   const [form, setFormState] = useState(emptyForm)
   const [errors, setErrors] = useState({})
+
+  useEffect(() => {
+    const title = TRANSLATIONS[lang].seo_title
+    const desc = TRANSLATIONS[lang].seo_desc
+
+    document.title = title
+    document.documentElement.lang = lang
+
+    const metaDesc = document.querySelector('meta[name="description"]')
+    if (metaDesc) metaDesc.setAttribute('content', desc)
+
+    const ogTitle = document.querySelector('meta[property="og:title"]')
+    if (ogTitle) ogTitle.setAttribute('content', title)
+
+    const ogDesc = document.querySelector('meta[property="og:description"]')
+    if (ogDesc) ogDesc.setAttribute('content', desc)
+  }, [lang])
 
   const t = (key, params = {}) => {
     let text = TRANSLATIONS[lang][key] || key

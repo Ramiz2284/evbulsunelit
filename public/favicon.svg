@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="20" fill="#1e1b4b"/>
-  <text x="50" y="68" font-size="60" text-anchor="middle" font-family="serif" font-weight="bold" fill="#6366f1">E</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="black"/>
+  <path d="M256 64l-160 144v224h320v-224l-160-144zm0 48l128 115.2v176.8h-256v-176.8l128-115.2z" fill="white"/>
+  <rect x="186" y="210" width="140" height="140" fill="none" stroke="white" stroke-width="20"/>
+  <text x="256" y="315" font-family="'Inter', sans-serif" font-size="100" font-weight="800" fill="white" text-anchor="middle">EV</text>
+  <text x="256" y="470" font-family="'Inter', sans-serif" font-size="70" font-weight="800" fill="white" text-anchor="middle" letter-spacing="5">BULSUN</text>
 </svg>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://evbulsunelit.vercel.app/sitemap.xml
