@@ -364,6 +364,20 @@ const TRANSLATIONS = {
     seo_block_li3: 'Türkiye\'de yüksek getirili gayrimenkul yatırımı.',
     seo_block_li4: 'Kamuya açık platformlarda bulunmayan özel villalar ve penthouse daireler.',
     seller_img_alt: 'Antalya\'da modern lüks mimari',
+    faq_title: "Sıkça Sorulan Sorular",
+    faq_subtitle: "Türkiye'de mülk kiralama ve satın alma hakkında bilmeniz gereken her şey",
+    faq_q1: "Aracı olmadan Türkiye'de nasıl daire bulunur?",
+    faq_a1: "EvBulsun tersine bir pazaryeri olarak çalışır: taleplerinizi belirlersiniz ve mülk sahipleri doğrudan sizinle iletişime geçer. Bu, acente komisyonlarını ve aracılarla yapılan uzun müzakereleri ortadan kaldırır.",
+    faq_q2: "2025 yılında yabancılar için İstanbul'da daire kiralamanın maliyeti nedir?",
+    faq_a2: "İstanbul'da kira fiyatları, yerleşim bölgelerindeki bir stüdyo için aylık 400-600 dolardan, merkezi bölgelerdeki (Beşiktaş, Nişantaşı, Kadıköy) daireler için 1.500-3.000 dolara kadar değişmektedir. EvBulsun aracılığıyla bütçenize uygun teklifleri doğrudan sahiplerinden alırsınız.",
+    faq_q3: "Bir yabancı Türkiye'den mülk satın alabilir mi?",
+    faq_a3: "Evet, Rusya, Ukrayna, Beyaz Rusya ve AB ülkeleri dahil çoğu ülke vatandaşı Türkiye'den gayrimenkul satın alabilir. 400.000 dolar ve üzeri değerinde mülk satın almak Türk vatandaşlığına hak kazandırabilir. EvBulsun hedeflerinize uygun mülkü bulmanıza yardımcı olur.",
+    faq_q4: "Sahipler bir talebe ne kadar sürede yanıt veriyor?",
+    faq_a4: "Talebiniz gönderildikten hemen sonra kapalı ağda yayınlanır. Genellikle ilk teklifler birkaç saat içinde ulaşır. Acil talepler (🔥 ile işaretlenmiş) önceliklidir.",
+    faq_q5: "EvBulsun Türkiye'nin hangi şehirlerini kapsıyor?",
+    faq_a5: "Hizmet tüm büyük şehirleri kapsamaktadır: İstanbul, Ankara, Antalya, Alanya, İzmir, Bursa, Mersin, Trabzon, Gaziantep. Şehriniz listede yoksa 'Diğer' seçeneğini belirleyin ve açıklamada ismini belirtin.",
+    faq_q6: "İletişim bilgilerimi EvBulsun üzerinden paylaşmak güvenli mi?",
+    faq_a6: "Hangi iletişim kanalını göstereceğinizi kendiniz seçersiniz: Telegram (telefon numaranızı ifşa etmeden), WhatsApp veya e-posta. Verileriniz üçüncü şahıslarla paylaşılmaz veya reklam amaçlı kullanılmaz.",
   }
 }
 
@@ -805,8 +819,8 @@ function FAQSection({ lang }) {
             <div
               key={idx}
               className={`border rounded-2xl transition-all duration-300 ${activeIndex === idx
-                  ? 'border-primary/40 bg-primary/[0.02] dark:bg-primary/[0.01]'
-                  : 'border-gray-100 dark:border-white/5 hover:border-primary/20 bg-white dark:bg-navy-900/50'
+                ? 'border-primary/40 bg-primary/[0.02] dark:bg-primary/[0.01]'
+                : 'border-gray-100 dark:border-white/5 hover:border-primary/20 bg-white dark:bg-navy-900/50'
                 }`}
             >
               <button
