@@ -8,11 +8,308 @@ const TELEGRAM_BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || ''
 const TELEGRAM_CHANNEL_ID = import.meta.env.VITE_TELEGRAM_CHANNEL_ID || ''
 
 const CITIES = [
-  'Стамбул', 'Анкара', 'Измир', 'Анталья', 'Бурса',
-  'Аланья', 'Мерсин', 'Трабзон', 'Газиантеп', 'Другой',
+  'istanbul', 'ankara', 'izmir', 'antalya', 'bursa',
+  'alanya', 'mersin', 'trabzon', 'gaziantep', 'other',
 ]
 
-async function sendToTelegram(ad) {
+const TRANSLATIONS = {
+  ru: {
+    nav_objects: 'Объекты',
+    nav_how_it_works: 'Как это работает',
+    nav_concierge: 'Консьерж',
+    nav_cta: 'Оставить заявку',
+    nav_login: 'Войти',
+    hero_badge: 'Реверсивный маркетплейс',
+    hero_title: 'Найдите свою идеальную',
+    hero_title_italic: 'обитель',
+    hero_desc: 'Хватит листать бесконечные списки. Опишите дом своей мечты, и владельцы сами найдут вас. Прямо, эксклюзивно и изысканно.',
+    hero_cta: 'Оставить заявку',
+    hero_trust: 'Бесплатно · Без регистрации · 2 минуты',
+    how_title: 'Как это работает',
+    how_desc: 'Безупречный опыт, созданный для самых взыскательных клиентов.',
+    step01_title: 'Опишите пожелания',
+    step01_desc: 'Укажите город, бюджет и ваши особые требования к образу жизни через нашу форму.',
+    step02_title: 'Прямая рассылка',
+    step02_desc: 'Ваш запрос публикуется в закрытой сети владельцев недвижимости и проверенных агентов.',
+    step03_title: 'Прямой контакт',
+    step03_desc: 'Заинтересованные стороны свяжутся с вами напрямую. Без посредников и лишнего шума.',
+    step04_title: 'Финальный выбор',
+    step04_desc: 'Изучайте персональные предложения и выбирайте то, что по-настоящему станет вашим домом.',
+    privacy_title: 'Конфиденциальность на ваших условиях',
+    privacy_desc: 'Ваш Telegram остается скрытым. Предпочитаете почту или WhatsApp? Вы сами решаете, какие контакты видны владельцам. Безопасность — наш безусловный приоритет.',
+    seller_title: 'Хотите сдать',
+    seller_title_italic: 'или продать?',
+    seller_desc: 'Присоединяйтесь к нашей закрытой сети, где качественные покупатели публикуют свои эксклюзивные запросы.',
+    seller_cta: 'Вступить в сеть',
+    footer_desc: 'EvBulsun — Поиск премиального жилья для экспатов за рубежом.',
+    footer_privacy: 'Конфиденциальность',
+    footer_terms: 'Условия',
+    footer_contacts: 'Контакты',
+    footer_copy: 'Все права защищены.',
+    form_back: 'Назад на главную',
+    form_step1_title: 'Опишите ваш запрос',
+    form_step2_title: 'Контактные данные',
+    form_step_of: 'Шаг {step} из 2',
+    form_label_type: 'Что ищете?',
+    form_type_rent: '🏠 Аренда',
+    form_type_buy: '💰 Покупка',
+    form_label_city: 'Город',
+    form_city_placeholder: 'Выберите…',
+    form_label_district: 'Район',
+    form_district_hint: 'необязательно',
+    form_district_placeholder: 'Кадыкёй, Лара…',
+    form_label_rooms: 'Комнат',
+    form_rooms_studio: 'Студия',
+    form_rooms_count: '{n}-комн.',
+    form_rooms_plus: '4+ комн.',
+    form_label_budget: 'Бюджет (до)',
+    form_budget_placeholder: '50 000',
+    form_label_currency: 'Валюта',
+    form_label_desc: 'Опишите пожелания',
+    form_desc_placeholder: 'Этаж, балкон, рядом с метро, питомцы, срок заселения…',
+    form_label_urgent: '🔥 Срочный запрос',
+    form_urgent_desc: 'Мне нужно жильё в самое ближайшее время',
+    form_contact_title: 'Как с вами связаться?',
+    form_contact_preview: 'Предпросмотр в Telegram',
+    form_btn_next: 'Далее',
+    form_btn_back: 'Назад',
+    form_btn_submit: 'Разместить запрос',
+    form_sending: 'Отправка...',
+    success_title: 'Запрос опубликован!',
+    success_desc: 'Ваше объявление уже появилось в закрытом Telegram-канале. Владельцы недвижимости скоро свяжутся с вами напрямую.',
+    success_tip_title: 'Совет:',
+    success_tip_desc: 'Пока вы ждете предложений, вы можете подписаться на наш канал, чтобы следить за другими запросами и обновлениями рынка.',
+    success_btn_tg: 'Открыть Telegram',
+    success_btn_home: 'На главную',
+    error_title: 'Не удалось отправить',
+    error_desc: 'При публикации запроса в Telegram произошла техническая ошибка.',
+    error_label_details: 'Детали ошибки',
+    error_label_failed: 'Действие не выполнено',
+    error_quote: '"Качество — это когда возвращается покупатель, а не товар. Мы стремимся к совершенству в каждом запросе."',
+    error_footer: 'Пожалуйста, проверьте настройки API и попробуйте позже.',
+    error_btn_retry: 'Попробовать снова',
+    val_city: 'Выберите город',
+    val_budget: 'Укажите бюджет цифрами',
+    val_desc: 'Напишите хотя бы пару предложений',
+    val_contact: 'Укажите контакт для связи',
+    val_tg_format: 'Telegram username должен начинаться с @',
+    city_istanbul: 'Стамбул',
+    city_ankara: 'Анкара',
+    city_izmir: 'Измир',
+    city_antalya: 'Анталья',
+    city_bursa: 'Бурса',
+    city_alanya: 'Аланья',
+    city_mersin: 'Мерсин',
+    city_trabzon: 'Трабзон',
+    city_gaziantep: 'Газиантеп',
+    city_other: 'Другой',
+    tg_title_rent: '🏠 АРЕНДА',
+    tg_title_buy: '💰 ПОКУПКА',
+    tg_urgent: '🔥 *СРОЧНО*',
+    tg_footer: 'Заявка с сайта EvBulsun',
+    contact_tg_hint: '@username — не раскрывает номер телефона',
+    contact_wa_hint: 'Номер с кодом страны',
+    contact_mail_hint: 'Владельцы напишут письмо',
+  },
+  en: {
+    nav_objects: 'Properties',
+    nav_how_it_works: 'How it works',
+    nav_concierge: 'Concierge',
+    nav_cta: 'Post Request',
+    nav_login: 'Login',
+    hero_badge: 'Reverse Marketplace',
+    hero_title: 'Find your perfect',
+    hero_title_italic: 'dwelling',
+    hero_desc: 'Stop scrolling through endless listings. Describe your dream home, and owners will find you. Direct, exclusive, and refined.',
+    hero_cta: 'Post Request',
+    hero_trust: 'Free · No registration · 2 minutes',
+    how_title: 'How it works',
+    how_desc: 'A flawless experience designed for the most discerning clients.',
+    step01_title: 'Describe your wishes',
+    step01_desc: 'Specify city, budget, and your special lifestyle requirements through our form.',
+    step02_title: 'Direct broadcasting',
+    step02_desc: 'Your request is published in a closed network of property owners and verified agents.',
+    step03_title: 'Direct contact',
+    step03_desc: 'Interested parties will contact you directly. No intermediaries or unnecessary noise.',
+    step04_title: 'Final choice',
+    step04_desc: 'Review personal offers and choose what will truly become your home.',
+    privacy_title: 'Privacy on your terms',
+    privacy_desc: 'Your Telegram remains hidden. Prefer email or WhatsApp? You decide which contacts are visible to owners. Security is our absolute priority.',
+    seller_title: 'Want to rent out',
+    seller_title_italic: 'or sell?',
+    seller_desc: 'Join our closed network where high-quality buyers publish their exclusive requests.',
+    seller_cta: 'Join network',
+    footer_desc: 'EvBulsun — Premium housing search for expats abroad.',
+    footer_privacy: 'Privacy Policy',
+    footer_terms: 'Terms of Use',
+    footer_contacts: 'Contacts',
+    footer_copy: 'All rights reserved.',
+    form_back: 'Back to main',
+    form_step1_title: 'Describe your request',
+    form_step2_title: 'Contact details',
+    form_step_of: 'Step {step} of 2',
+    form_label_type: 'What are you looking for?',
+    form_type_rent: '🏠 Rent',
+    form_type_buy: '💰 Buy',
+    form_label_city: 'City',
+    form_city_placeholder: 'Choose…',
+    form_label_district: 'District',
+    form_district_hint: 'optional',
+    form_district_placeholder: 'Kadikoy, Lara…',
+    form_label_rooms: 'Rooms',
+    form_rooms_studio: 'Studio',
+    form_rooms_count: '{n}-room',
+    form_rooms_plus: '4+ rooms',
+    form_label_budget: 'Budget (up to)',
+    form_budget_placeholder: '50,000',
+    form_label_currency: 'Currency',
+    form_label_desc: 'Describe wishes',
+    form_desc_placeholder: 'Floor, balcony, near metro, pets, move-in date…',
+    form_label_urgent: '🔥 Urgent request',
+    form_urgent_desc: 'I need housing as soon as possible',
+    form_contact_title: 'How to contact you?',
+    form_contact_preview: 'Telegram Preview',
+    form_btn_next: 'Next',
+    form_btn_back: 'Back',
+    form_btn_submit: 'Post request',
+    form_sending: 'Sending...',
+    success_title: 'Request published!',
+    success_desc: 'Your ad has already appeared in the closed Telegram channel. Property owners will contact you directly soon.',
+    success_tip_title: 'Tip:',
+    success_tip_desc: 'While you wait for offers, you can subscribe to our channel to follow other requests and market updates.',
+    success_btn_tg: 'Open Telegram',
+    success_btn_home: 'To main page',
+    error_title: 'Failed to send',
+    error_desc: 'A technical error occurred while publishing the request to Telegram.',
+    error_label_details: 'Error Details',
+    error_label_failed: 'Action not completed',
+    error_quote: '"Quality is when the customer returns, not the product. We strive for excellence in every request."',
+    error_footer: 'Please check your API settings and try again later.',
+    error_btn_retry: 'Try again',
+    val_city: 'Please choose a city',
+    val_budget: 'Specify budget with numbers',
+    val_desc: 'Write at least a couple of sentences',
+    val_contact: 'Specify contact for communication',
+    val_tg_format: 'Telegram username must start with @',
+    city_istanbul: 'Istanbul',
+    city_ankara: 'Ankara',
+    city_izmir: 'Izmir',
+    city_antalya: 'Antalya',
+    city_bursa: 'Bursa',
+    city_alanya: 'Alanya',
+    city_mersin: 'Mersin',
+    city_trabzon: 'Trabzon',
+    city_gaziantep: 'Gaziantep',
+    city_other: 'Other',
+    tg_title_rent: '🏠 RENT',
+    tg_title_buy: '💰 BUY',
+    tg_urgent: '🔥 *URGENT*',
+    tg_footer: 'Request from EvBulsun website',
+    contact_tg_hint: '@username — does not reveal phone number',
+    contact_wa_hint: 'Number with country code',
+    contact_mail_hint: 'Owners will write an email',
+  },
+  tr: {
+    nav_objects: 'Mülkler',
+    nav_how_it_works: 'Nasıl çalışır',
+    nav_concierge: 'Concierge',
+    nav_cta: 'Talep Bırak',
+    nav_login: 'Giriş Yap',
+    hero_badge: 'Tersine Pazaryeri',
+    hero_title: 'Mükemmel evinizi',
+    hero_title_italic: 'bulun',
+    hero_desc: 'Sonsuz ilanlar arasında kaybolmayı bırakın. Hayalinizdeki evi tarif edin, ev sahipleri sizi bulsun. Doğrudan, özel ve seçkin.',
+    hero_cta: 'Talep Bırak',
+    hero_trust: 'Ücretsiz · Kayıt yok · 2 dakika',
+    how_title: 'Nasıl çalışır',
+    how_desc: 'En seçici müşteriler için tasarlanmış kusursuz bir deneyim.',
+    step01_title: 'Dileklerinizi belirtin',
+    step01_desc: 'Şehir, bütçe ve yaşam tarzınıza özel gereksinimlerinizi formumuz aracılığıyla belirtin.',
+    step02_title: 'Doğrudan yayım',
+    step02_desc: 'Talebiniz, mülk sahipleri ve doğrulanmış acentelerden oluşan kapalı bir ağda yayımlanır.',
+    step03_title: 'Doğrudan iletişim',
+    step03_desc: 'İlgili taraflar sizinle doğrudan iletişime geçecektir. Aracı veya gereksiz gürültü yok.',
+    step04_title: 'Final seçimi',
+    step04_desc: 'Kişisel teklifleri inceleyin ve gerçekten eviniz olacak olanı seçin.',
+    privacy_title: 'Şartlarınıza göre gizlilik',
+    privacy_desc: 'Telegram hesabınız gizli kalır. E-posta mı yoksa WhatsApp mı tercih edersiniz? Hangi iletişim bilgilerinin görüntüleneceğine siz karar verirsiniz. Güvenlik mutlak önceliğimizdir.',
+    seller_title: 'Kiraya vermek',
+    seller_title_italic: 'veya satmak mı istiyorsunuz?',
+    seller_desc: 'Kaliteli alıcıların özel taleplerini yayımladığı kapalı ağımıza katılın.',
+    seller_cta: 'Ağa katılın',
+    footer_desc: 'EvBulsun — Yurt dışındaki gurbetçiler için premium konut arama.',
+    footer_privacy: 'Gizlilik Politikası',
+    footer_terms: 'Kullanım Koşulları',
+    footer_contacts: 'İletişim',
+    footer_copy: 'Tüm hakları saklıdır.',
+    form_back: 'Ana sayfaya dön',
+    form_step1_title: 'Talebinizi tarif edin',
+    form_step2_title: 'İletişim bilgileri',
+    form_step_of: 'Adım {step} / 2',
+    form_label_type: 'Ne arıyorsunuz?',
+    form_type_rent: '🏠 Kiralık',
+    form_type_buy: '💰 Satılık',
+    form_label_city: 'Şehir',
+    form_city_placeholder: 'Seçiniz…',
+    form_label_district: 'İlçe',
+    form_district_hint: 'isteğe bağlı',
+    form_district_placeholder: 'Kadıköy, Lara…',
+    form_label_rooms: 'Oda Sayısı',
+    form_rooms_studio: 'Stüdyo',
+    form_rooms_count: '{n} odalı',
+    form_rooms_plus: '4+ odalı',
+    form_label_budget: 'Bütçe (maks)',
+    form_budget_placeholder: '50.000',
+    form_label_currency: 'Para Birimi',
+    form_label_desc: 'Dileklerinizi tarif edin',
+    form_desc_placeholder: 'Kat, balkon, metroya yakınlık, evcil hayvan, taşınma tarihi…',
+    form_label_urgent: '🔥 Acil talep',
+    form_urgent_desc: 'En kısa sürede bir konuta ihtiyacım var',
+    form_contact_title: 'Sizinle nasıl iletişime geçelim?',
+    form_contact_preview: 'Telegram Önizleme',
+    form_btn_next: 'İleri',
+    form_btn_back: 'Geri',
+    form_btn_submit: 'Talebi yayımla',
+    form_sending: 'Gönderiliyor...',
+    success_title: 'Talep yayımlandı!',
+    success_desc: 'İlanınız kapalı Telegram kanalında yayımlandı. Mülk sahipleri yakında sizinle doğrudan iletişime geçecektir.',
+    success_tip_title: 'İpucu:',
+    success_tip_desc: 'Teklifleri beklerken, diğer talepleri ve piyasa güncellemelerini takip etmek için kanalımıza abone olabilirsiniz.',
+    success_btn_tg: 'Telegram\'ı Aç',
+    success_btn_home: 'Ana sayfaya',
+    error_title: 'Gönderilemedi',
+    error_desc: 'Talebi Telegram\'да yayımlarken teknik bir hata oluştu.',
+    error_label_details: 'Hata Detayları',
+    error_label_failed: 'İşlem tamamlanamadı',
+    error_quote: '"Kalite, müşterinin geri gelmesidir, ürünün değil. Her talepte mükemmellik için çabalıyoruz."',
+    error_footer: 'Lütfen API ayarlarınızı kontrol edin ve daha sonra tekrar deneyin.',
+    error_btn_retry: 'Tekrar dene',
+    val_city: 'Lütfen bir şehir seçin',
+    val_budget: 'Bütçeyi rakamlarla belirtin',
+    val_desc: 'En az birkaç cümle yazın',
+    val_contact: 'İletişim için bir bilgi belirtin',
+    val_tg_format: 'Telegram kullanıcı adı @ ile başlamalıdır',
+    city_istanbul: 'İstanbul',
+    city_ankara: 'Ankara',
+    city_izmir: 'İzmir',
+    city_antalya: 'Antalya',
+    city_bursa: 'Bursa',
+    city_alanya: 'Alanya',
+    city_mersin: 'Mersin',
+    city_trabzon: 'Trabzon',
+    city_gaziantep: 'Gaziantep',
+    city_other: 'Diğer',
+    tg_title_rent: '🏠 KİRALIK',
+    tg_title_buy: '💰 SATILIK',
+    tg_urgent: '🔥 *ACİL*',
+    tg_footer: 'EvBulsun sitesinden talep',
+    contact_tg_hint: '@username — telefon numarasını göstermez',
+    contact_wa_hint: 'Ülke kodu ile numara',
+    contact_mail_hint: 'Sahipleri e-posta gönderecektir',
+  }
+}
+
+async function sendToTelegram(ad, lang) {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHANNEL_ID) {
     throw new Error(
       'Не заданы переменные окружения VITE_TELEGRAM_BOT_TOKEN и VITE_TELEGRAM_CHANNEL_ID. ' +
@@ -20,9 +317,17 @@ async function sendToTelegram(ad) {
     )
   }
 
-  const roomsLabel = ad.rooms === 'studio' ? 'Студия' : `${ad.rooms}-комн.`
+  const t = (key, params = {}) => {
+    let text = TRANSLATIONS[lang][key] || key
+    Object.entries(params).forEach(([k, v]) => {
+      text = text.replace(`{${k}}`, v)
+    })
+    return text
+  }
+
+  const roomsLabel = ad.rooms === 'studio' ? t('form_rooms_studio') : t('form_rooms_count', { n: ad.rooms })
   const districtLine = ad.district ? ` · ${ad.district}` : ''
-  const urgentLine = ad.urgent ? '\n🔥 *СРОЧНО*' : ''
+  const urgentLine = ad.urgent ? `\n${t('tg_urgent')}` : ''
 
   let contactLine = ''
   if (ad.contactType === 'telegram') contactLine = `✈️ Telegram: ${ad.contactValue}`
@@ -30,12 +335,12 @@ async function sendToTelegram(ad) {
   else if (ad.contactType === 'email') contactLine = `📧 Email: ${ad.contactValue}`
 
   const text =
-    `${ad.type === 'rent' ? '🏠 АРЕНДА' : '💰 ПОКУПКА'}${urgentLine}\n\n` +
-    `📍 *${ad.city}${districtLine}*\n` +
+    `${ad.type === 'rent' ? t('tg_title_rent') : t('tg_title_buy')}${urgentLine}\n\n` +
+    `📍 *${t('city_' + ad.city)}${districtLine}*\n` +
     `🛏 ${roomsLabel} · 💵 до ${Number(ad.budget).toLocaleString()} ${ad.currency}\n\n` +
     `📝 ${ad.description}\n\n` +
     `${contactLine}\n\n` +
-    `_Заявка с сайта EvBulsun_`
+    `_${t('tg_footer')}_`
 
   const res = await fetch(
     `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -108,61 +413,69 @@ function ToggleTag({ active, onClick, children }) {
 
 // ─── Шаг 1: параметры жилья ──────────────────────────────────────────────────
 
-function Step1({ form, set, errors }) {
+function Step1({ form, set, errors, lang }) {
+  const t = (key, params = {}) => {
+    let text = TRANSLATIONS[lang][key] || key
+    Object.entries(params).forEach(([k, v]) => {
+      text = text.replace(`{${k}}`, v)
+    })
+    return text
+  }
+
   return (
     <div className="flex flex-col gap-8">
-      <Field label="Что ищете?">
+      <Field label={t('form_label_type')}>
         <div className="flex gap-4">
-          <ToggleTag active={form.type === 'rent'} onClick={() => set('type', 'rent')}>🏠 Аренда</ToggleTag>
-          <ToggleTag active={form.type === 'buy'} onClick={() => set('type', 'buy')}>💰 Покупка</ToggleTag>
+          <ToggleTag active={form.type === 'rent'} onClick={() => set('type', 'rent')}>{t('form_type_rent')}</ToggleTag>
+          <ToggleTag active={form.type === 'buy'} onClick={() => set('type', 'buy')}>{t('form_type_buy')}</ToggleTag>
         </div>
       </Field>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Field label="Город" error={errors.city}>
+        <Field label={t('form_label_city')} error={errors.city}>
           <div className="relative">
             <Sel value={form.city} onChange={e => set('city', e.target.value)}>
-              <option value="">Выберите…</option>
-              {CITIES.map(c => <option key={c}>{c}</option>)}
+              <option value="">{t('form_city_placeholder')}</option>
+              {CITIES.map(c => <option key={c} value={c}>{t('city_' + c)}</option>)}
             </Sel>
             <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">expand_more</span>
           </div>
         </Field>
-        <Field label="Район" hint="необязательно">
+        <Field label={t('form_label_district')} hint={t('form_district_hint')}>
           <Inp
             value={form.district}
             onChange={e => set('district', e.target.value)}
-            placeholder="Кадыкёй, Лара…"
+            placeholder={t('form_district_placeholder')}
           />
         </Field>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-[1fr_1fr_120px] gap-6">
         <div className="col-span-1">
-          <Field label="Комнат">
+          <Field label={t('form_label_rooms')}>
             <div className="relative">
               <Sel value={form.rooms} onChange={e => set('rooms', e.target.value)}>
-                <option value="studio">Студия</option>
-                <option value="1">1-комн.</option>
-                <option value="2">2-комн.</option>
-                <option value="3">3-комн.</option>
-                <option value="4+">4+ комн.</option>
+                <option value="studio">{t('form_rooms_studio')}</option>
+                <option value="1">{t('form_rooms_count', { n: 1 })}</option>
+                <option value="2">{t('form_rooms_count', { n: 2 })}</option>
+                <option value="3">{t('form_rooms_count', { n: 3 })}</option>
+                <option value="4+">{t('form_rooms_plus')}</option>
               </Sel>
               <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">expand_more</span>
             </div>
           </Field>
         </div>
         <div className="col-span-1">
-          <Field label="Бюджет (до)" error={errors.budget}>
+          <Field label={t('form_label_budget')} error={errors.budget}>
             <Inp
               value={form.budget}
               onChange={e => set('budget', e.target.value)}
-              placeholder="50 000"
+              placeholder={t('form_budget_placeholder')}
             />
           </Field>
         </div>
         <div className="col-span-2 md:col-span-1">
-          <Field label="Валюта">
+          <Field label={t('form_label_currency')}>
             <div className="relative">
               <Sel value={form.currency} onChange={e => set('currency', e.target.value)}>
                 <option>USD</option>
@@ -175,11 +488,11 @@ function Step1({ form, set, errors }) {
         </div>
       </div>
 
-      <Field label="Опишите пожелания" hint={`${form.description.length} / 500`} error={errors.description}>
+      <Field label={t('form_label_desc')} hint={`${form.description.length} / 500`} error={errors.description}>
         <textarea
           value={form.description}
           onChange={e => set('description', e.target.value.slice(0, 500))}
-          placeholder="Этаж, балкон, рядом с метро, питомцы, срок заселения…"
+          placeholder={t('form_desc_placeholder')}
           rows={5}
           className="w-full px-5 py-4 bg-white dark:bg-navy-900 border border-gray-200 dark:border-white/10 rounded-xl focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all duration-200 text-navy-950 dark:text-gray-100 placeholder:text-gray-400 resize-none leading-relaxed"
         />
@@ -195,8 +508,8 @@ function Step1({ form, set, errors }) {
           />
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-navy-950 dark:text-gray-100">🔥 Срочный запрос</span>
-          <span className="text-xs text-gray-400">Мне нужно жильё в самое ближайшее время</span>
+          <span className="text-sm font-bold text-navy-950 dark:text-gray-100">{t('form_label_urgent')}</span>
+          <span className="text-xs text-gray-400">{t('form_urgent_desc')}</span>
         </div>
       </label>
     </div>
@@ -205,19 +518,27 @@ function Step1({ form, set, errors }) {
 
 // ─── Шаг 2: контакт ──────────────────────────────────────────────────────────
 
-const CONTACT_OPTS = [
-  { value: 'telegram', label: 'Telegram', icon: '✈️', hint: '@username — не раскрывает номер телефона', placeholder: '@username' },
-  { value: 'whatsapp', label: 'WhatsApp', icon: '📱', hint: 'Номер с кодом страны', placeholder: '+7 900 000 0000' },
-  { value: 'email', label: 'Email', icon: '📧', hint: 'Владельцы напишут письмо', placeholder: 'you@example.com' },
-]
+function Step2({ form, set, errors, lang }) {
+  const t = (key, params = {}) => {
+    let text = TRANSLATIONS[lang][key] || key
+    Object.entries(params).forEach(([k, v]) => {
+      text = text.replace(`{${k}}`, v)
+    })
+    return text
+  }
 
-function Step2({ form, set, errors }) {
-  const cur = CONTACT_OPTS.find(o => o.value === form.contactType)
+  const contactOpts = [
+    { value: 'telegram', label: 'Telegram', icon: '✈️', hint: t('contact_tg_hint'), placeholder: '@username' },
+    { value: 'whatsapp', label: 'WhatsApp', icon: '📱', hint: t('contact_wa_hint'), placeholder: '+7 900 000 0000' },
+    { value: 'email', label: 'Email', icon: '📧', hint: t('contact_mail_hint'), placeholder: 'you@example.com' },
+  ]
+
+  const cur = contactOpts.find(o => o.value === form.contactType)
 
   const preview =
-    `${form.type === 'rent' ? '🏠 АРЕНДА' : '💰 ПОКУПКА'}${form.urgent ? '\n🔥 СРОЧНО' : ''}\n\n` +
-    `📍 ${form.city || '…'}${form.district ? ` · ${form.district}` : ''}\n` +
-    `🛏 ${form.rooms === 'studio' ? 'Студия' : `${form.rooms}-комн.`} · 💵 до ${form.budget ? Number(form.budget).toLocaleString() : '…'} ${form.currency}\n\n` +
+    `${form.type === 'rent' ? t('form_type_rent') : t('form_type_buy')}${form.urgent ? `\n${t('form_label_urgent')}` : ''}\n\n` +
+    `📍 ${form.city ? t('city_' + form.city) : '…'}${form.district ? ` · ${form.district}` : ''}\n` +
+    `🛏 ${form.rooms === 'studio' ? t('form_rooms_studio') : t('form_rooms_count', { n: form.rooms })} · 💵 до ${form.budget ? Number(form.budget).toLocaleString() : '…'} ${form.currency}\n\n` +
     `📝 ${form.description || '…'}\n\n` +
     (form.contactType === 'telegram' ? `✈️ Telegram: ${form.contactValue || '@username'}`
       : form.contactType === 'whatsapp' ? `📱 WhatsApp: ${form.contactValue || '+7…'}`
@@ -227,15 +548,15 @@ function Step2({ form, set, errors }) {
     <div className="flex flex-col gap-6">
       <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 flex gap-4 items-start">
         <span className="material-symbols-outlined text-primary text-2xl pt-1">lock</span>
-        <p className="text-sm dark:text-gray-300 leading-relaxed">
-          <strong className="text-primary block mb-1">Только вы решаете, что раскрывать.</strong>
-          Telegram username не раскрывает ваш номер. Хозяева смогут написать вам — и не узнают ничего лишнего.
-        </p>
+        <div className="text-sm dark:text-gray-300 leading-relaxed">
+          <strong className="text-primary block mb-1">{t('privacy_title')}</strong>
+          {t('privacy_desc')}
+        </div>
       </div>
 
-      <Field label="Как с вами связаться?">
+      <Field label={t('form_contact_title')}>
         <div className="flex flex-wrap gap-3">
-          {CONTACT_OPTS.map(o => (
+          {contactOpts.map(o => (
             <ToggleTag key={o.value} active={form.contactType === o.value} onClick={() => set('contactType', o.value)}>
               <span className="mr-2">{o.icon}</span> {o.label}
             </ToggleTag>
@@ -254,7 +575,7 @@ function Step2({ form, set, errors }) {
 
       <div className="bg-background-light dark:bg-navy-950/50 rounded-2xl p-6 border border-gray-100 dark:border-white/5">
         <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-4">
-          Предпросмотр в Telegram
+          {t('form_contact_preview')}
         </div>
         <pre className="font-mono text-sm dark:text-gray-400 whitespace-pre-wrap word-break-all leading-6">
           {preview}
@@ -266,8 +587,15 @@ function Step2({ form, set, errors }) {
 
 // ─── Обёртка страницы ─────────────────────────────────────────────────────────
 
-function Shell({ children, setPage }) {
+function Shell({ children, setPage, lang, setLang }) {
   const [isOpen, setIsOpen] = useState(false)
+  const t = (key, params = {}) => {
+    let text = TRANSLATIONS[lang][key] || key
+    Object.entries(params).forEach(([k, v]) => {
+      text = text.replace(`{${k}}`, v)
+    })
+    return text
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -277,13 +605,13 @@ function Shell({ children, setPage }) {
             <span className="font-display text-2xl font-bold tracking-tight text-navy-950 dark:text-white">
               Ev<span className="text-primary">Bulsun</span>
             </span>
-            <span className="hidden md:block text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400 mt-1 pl-4 border-l border-gray-200 dark:border-gray-800">
+            <span className="hidden lg:block text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400 mt-1 pl-4 border-l border-gray-200 dark:border-gray-800">
               Жизнь на ваших условиях
             </span>
           </div>
 
           <nav className="hidden md:flex items-center space-x-8 text-[11px] font-bold tracking-widest uppercase text-gray-400 dark:text-gray-500">
-            <a className="hover:text-primary transition-colors" href="#">Объекты</a>
+            <a className="hover:text-primary transition-colors" href="#">{t('nav_objects')}</a>
             <button
               className="hover:text-primary transition-colors uppercase"
               onClick={() => {
@@ -294,17 +622,30 @@ function Shell({ children, setPage }) {
                 }, 100);
               }}
             >
-              Как это работает
+              {t('nav_how_it_works')}
             </button>
-            <a className="hover:text-primary transition-colors" href="#">Консьерж</a>
+            <a className="hover:text-primary transition-colors" href="#">{t('nav_concierge')}</a>
           </nav>
 
           <div className="flex items-center space-x-4">
+            {/* Language Switcher */}
+            <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-full">
+              {['ru', 'en', 'tr'].map(l => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase transition-all ${lang === l ? 'bg-white dark:bg-navy-900 text-primary shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+
             <button
               onClick={() => { window.scrollTo(0, 0); setPage('form'); setIsOpen(false); }}
-              className="bg-primary text-white px-6 md:px-8 py-2.5 md:py-3 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 transition-all hover:scale-[1.05]"
+              className="hidden sm:block bg-primary text-white px-6 md:px-8 py-2.5 md:py-3 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 transition-all hover:scale-[1.05]"
             >
-              Оставить заявку
+              {t('nav_cta')}
             </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -320,7 +661,7 @@ function Shell({ children, setPage }) {
         {/* Планшетное/Мобильное меню */}
         <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-navy-950 border-b border-gray-100 dark:border-white/5 ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
           <nav className="flex flex-col p-6 space-y-6 text-[11px] font-bold tracking-[0.2em] uppercase text-gray-500 dark:text-gray-400">
-            <a className="hover:text-primary transition-colors" href="#" onClick={() => setIsOpen(false)}>Объекты</a>
+            <a className="hover:text-primary transition-colors" href="#" onClick={() => setIsOpen(false)}>{t('nav_objects')}</a>
             <button
               className="text-left hover:text-primary transition-colors uppercase"
               onClick={() => {
@@ -331,11 +672,17 @@ function Shell({ children, setPage }) {
                 }, 100);
               }}
             >
-              Как это работает
+              {t('nav_how_it_works')}
             </button>
-            <a className="hover:text-primary transition-colors" href="#" onClick={() => setIsOpen(false)}>Консьерж</a>
-            <div className="pt-4 border-t border-gray-50 dark:border-white/5 flex gap-4">
-              <button className="text-primary tracking-widest py-2">Войти</button>
+            <a className="hover:text-primary transition-colors" href="#" onClick={() => setIsOpen(false)}>{t('nav_concierge')}</a>
+            <div className="pt-4 border-t border-gray-50 dark:border-white/5 flex flex-col gap-4">
+              <button
+                onClick={() => { window.scrollTo(0, 0); setPage('form'); setIsOpen(false); }}
+                className="text-primary tracking-widest py-2 text-left"
+              >
+                {t('nav_cta')}
+              </button>
+              <button className="text-gray-400 tracking-widest py-2 text-left">{t('nav_login')}</button>
             </div>
           </nav>
         </div>
@@ -352,16 +699,16 @@ function Shell({ children, setPage }) {
               </span>
             </div>
             <div className="text-gray-400 dark:text-gray-500 text-sm font-light tracking-wide max-w-xs text-center md:text-left">
-              EvBulsun — Поиск премиального жилья для экспатов за рубежом.
+              {t('footer_desc')}
             </div>
             <div className="flex space-x-8 text-gray-400 dark:text-gray-600 text-[11px] font-bold uppercase tracking-widest">
-              <a className="hover:text-primary transition-colors" href="#">Конфиденциальность</a>
-              <a className="hover:text-primary transition-colors" href="#">Условия</a>
-              <a className="hover:text-primary transition-colors" href="#">Контакты</a>
+              <a className="hover:text-primary transition-colors" href="#">{t('footer_privacy')}</a>
+              <a className="hover:text-primary transition-colors" href="#">{t('footer_terms')}</a>
+              <a className="hover:text-primary transition-colors" href="#">{t('footer_contacts')}</a>
             </div>
           </div>
           <div className="mt-16 text-center text-gray-300 dark:text-gray-800 text-[10px] uppercase tracking-[0.3em] font-medium">
-            &copy; {new Date().getFullYear()} EvBulsun. Все права защищены.
+            &copy; {new Date().getFullYear()} EvBulsun. {t('footer_copy')}
           </div>
         </div>
       </footer>
@@ -371,7 +718,15 @@ function Shell({ children, setPage }) {
 
 // ─── Главная страница ───────────────────────────────────────────────────────
 
-function Home({ setPage }) {
+function Home({ setPage, lang }) {
+  const t = (key, params = {}) => {
+    let text = TRANSLATIONS[lang][key] || key
+    Object.entries(params).forEach(([k, v]) => {
+      text = text.replace(`{${k}}`, v)
+    })
+    return text
+  }
+
   return (
     <>
       {/* Hero Section */}
@@ -379,24 +734,24 @@ function Home({ setPage }) {
         <div className="absolute inset-0 bg-navy-950/20"></div>
         <div className="relative z-10 text-center max-w-5xl px-6">
           <span className="inline-block px-5 py-2 rounded-full border border-primary/30 text-primary bg-primary/5 text-[10px] font-black uppercase tracking-[0.4em] mb-10 animate-fade" style={{ animationDelay: '0.1s' }}>
-            Реверсивный маркетплейс
+            {t('hero_badge')}
           </span>
           <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-white mb-10 leading-[1.05] tracking-tight animate-fade" style={{ animationDelay: '0.2s' }}>
-            Найдите свою идеальную<br /> <span className="italic font-light text-primary/90">обитель</span>
+            {t('hero_title')}<br /> <span className="italic font-light text-primary/90">{t('hero_title_italic')}</span>
           </h1>
           <p className="text-gray-300 text-lg md:text-xl font-light mb-16 max-w-2xl mx-auto leading-relaxed opacity-90 animate-fade" style={{ animationDelay: '0.3s' }}>
-            Хватит листать бесконечные списки. Опишите дом своей мечты, и владельцы сами найдут вас. Прямо, эксклюзивно и изысканно.
+            {t('hero_desc')}
           </p>
           <div className="flex flex-col items-center gap-8 animate-fade" style={{ animationDelay: '0.4s' }}>
             <button
               onClick={() => { window.scrollTo(0, 0); setPage('form'); }}
               className="bg-primary text-white px-12 py-6 rounded-full text-lg font-bold uppercase tracking-widest gold-shimmer shadow-2xl shadow-primary/30 flex items-center gap-4 transition-all hover:scale-[1.03] active:scale-[0.98]"
             >
-              Оставить заявку
+              {t('hero_cta')}
               <span className="material-symbols-outlined text-2xl">arrow_forward</span>
             </button>
             <p className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-bold">
-              Бесплатно · Без регистрации · 2 минуты
+              {t('hero_trust')}
             </p>
           </div>
         </div>
@@ -411,19 +766,19 @@ function Home({ setPage }) {
       <section id="how-it-works" className="py-32 px-6 bg-background-light dark:bg-background-dark">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24">
-            <h2 className="font-display text-4xl md:text-6xl mb-8 dark:text-white">Как это работает</h2>
+            <h2 className="font-display text-4xl md:text-6xl mb-8 dark:text-white">{t('how_title')}</h2>
             <div className="h-px w-24 bg-primary/50 mx-auto mb-10"></div>
             <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-lg font-light">
-              Безупречный опыт, созданный для самых взыскательных клиентов.
+              {t('how_desc')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
             {[
-              ['01', 'edit_note', 'Опишите пожелания', 'Укажите город, бюджет и ваши особые требования к образу жизни через нашу форму.'],
-              ['02', 'campaign', 'Прямая рассылка', 'Ваш запрос публикуется в закрытой сети владельцев недвижимости и проверенных агентов.'],
-              ['03', 'chat_bubble', 'Прямой контакт', 'Заинтересованные стороны свяжутся с вами напрямую. Без посредников и лишнего шума.'],
-              ['04', 'verified_user', 'Финальный выбор', 'Изучайте персональные предложения и выбирайте то, что по-настоящему станет вашим домом.'],
+              ['01', 'edit_note', t('step01_title'), t('step01_desc')],
+              ['02', 'campaign', t('step02_title'), t('step02_desc')],
+              ['03', 'chat_bubble', t('step03_title'), t('step03_desc')],
+              ['04', 'verified_user', t('step04_title'), t('step04_desc')],
             ].map(([n, icon, title, text]) => (
               <div key={n} className="group relative pt-12">
                 <span className="text-9xl font-display font-black text-gray-100 dark:text-white/5 absolute -top-4 -left-4 z-0 pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-2">
@@ -454,9 +809,9 @@ function Home({ setPage }) {
               <span className="material-symbols-outlined text-primary text-4xl">lock</span>
             </div>
             <div className="text-center md:text-left">
-              <h4 className="font-display text-3xl mb-5 dark:text-white">Конфиденциальность на ваших условиях</h4>
+              <h4 className="font-display text-3xl mb-5 dark:text-white">{t('privacy_title')}</h4>
               <p className="text-gray-600 dark:text-gray-400 font-light leading-relaxed text-lg">
-                Ваш Telegram остается скрытым. Предпочитаете почту или WhatsApp? Вы сами решаете, какие контакты видны владельцам. Безопасность — наш безусловный приоритет.
+                {t('privacy_desc')}
               </p>
             </div>
             <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-primary/10 rounded-full blur-[100px] opacity-30"></div>
@@ -478,10 +833,10 @@ function Home({ setPage }) {
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full gap-16">
               <div className="max-w-xl">
                 <h2 className="font-display text-4xl md:text-6xl text-white mb-8 leading-tight">
-                  Хотите сдать <br /> <span className="italic font-light">или продать?</span>
+                  {t('seller_title')} <br /> <span className="italic font-light">{t('seller_title_italic')}</span>
                 </h2>
                 <p className="text-gray-400 text-xl font-light mb-0 leading-relaxed max-w-md">
-                  Присоединяйтесь к нашей закрытой сети, где качественные покупатели публикуют свои эксклюзивные запросы.
+                  {t('seller_desc')}
                 </p>
               </div>
 
@@ -492,7 +847,7 @@ function Home({ setPage }) {
                   rel="noopener noreferrer"
                   className="glass px-12 py-6 rounded-full text-white font-bold uppercase tracking-widest flex items-center gap-4 hover:bg-white/10 transition-all duration-300 group shadow-2xl"
                 >
-                  Вступить в сеть
+                  {t('seller_cta')}
                   <span className="material-symbols-outlined group-hover:translate-x-2 transition-transform duration-300">send</span>
                 </a>
               </div>
@@ -513,12 +868,21 @@ const emptyForm = {
 }
 
 export default function App() {
+  const [lang, setLang] = useState('ru')
   const [page, setPage] = useState('home')   // home | form | success | error
   const [step, setStep] = useState(1)
   const [sending, setSending] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [form, setFormState] = useState(emptyForm)
   const [errors, setErrors] = useState({})
+
+  const t = (key, params = {}) => {
+    let text = TRANSLATIONS[lang][key] || key
+    Object.entries(params).forEach(([k, v]) => {
+      text = text.replace(`{${k}}`, v)
+    })
+    return text
+  }
 
   const set = (k, v) => setFormState(f => ({ ...f, [k]: v }))
 
@@ -531,17 +895,17 @@ export default function App() {
 
   const validateStep1 = () => {
     const e = {}
-    if (!form.city) e.city = 'Выберите город'
-    if (!form.budget || isNaN(form.budget.replace(/\s/g, ''))) e.budget = 'Укажите бюджет цифрами'
-    if (form.description.trim().length < 20) e.description = 'Напишите хотя бы пару предложений'
+    if (!form.city) e.city = t('val_city')
+    if (!form.budget || isNaN(form.budget.replace(/\s/g, ''))) e.budget = t('val_budget')
+    if (form.description.trim().length < 20) e.description = t('val_desc')
     return e
   }
 
   const validateStep2 = () => {
     const e = {}
-    if (!form.contactValue.trim()) e.contactValue = 'Укажите контакт для связи'
+    if (!form.contactValue.trim()) e.contactValue = t('val_contact')
     if (form.contactType === 'telegram' && form.contactValue && !form.contactValue.startsWith('@'))
-      e.contactValue = 'Telegram username должен начинаться с @'
+      e.contactValue = t('val_tg_format')
     return e
   }
 
@@ -557,7 +921,7 @@ export default function App() {
     if (Object.keys(e).length) { setErrors(e); return }
     setSending(true)
     try {
-      await sendToTelegram(form)
+      await sendToTelegram(form, lang)
       setPage('success')
     } catch (err) {
       setErrorMsg(err.message)
@@ -569,18 +933,18 @@ export default function App() {
 
   if (page === 'home') {
     return (
-      <Shell setPage={setPage}>
-        <Home setPage={setPage} />
+      <Shell setPage={setPage} lang={lang} setLang={setLang}>
+        <Home setPage={setPage} lang={lang} />
       </Shell>
     )
   }
 
   if (page === 'form') {
     return (
-      <Shell setPage={setPage}>
+      <Shell setPage={setPage} lang={lang} setLang={setLang}>
         <div className="max-w-2xl mx-auto px-6 py-24">
           <button onClick={reset} className="text-primary font-bold flex items-center gap-2 mb-12 hover:translate-x-[-4px] transition-transform">
-            <span className="material-symbols-outlined">arrow_back</span> Назад на главную
+            <span className="material-symbols-outlined">arrow_back</span> {t('form_back')}
           </button>
 
           <div className="bg-white dark:bg-navy-950 rounded-[2.5rem] border border-gray-100 dark:border-white/5 p-8 md:p-12 shadow-2xl relative overflow-hidden">
@@ -593,12 +957,12 @@ export default function App() {
 
             <div className="flex justify-between items-center mb-12">
               <h2 className="font-display text-3xl dark:text-white">
-                {step === 1 ? 'Опишите ваш запрос' : 'Контактные данные'}
+                {step === 1 ? t('form_step1_title') : t('form_step2_title')}
               </h2>
-              <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">Шаг {step} из 2</span>
+              <span className="text-[10px] uppercase tracking-widest font-black text-gray-400">{t('form_step_of', { step })}</span>
             </div>
 
-            {step === 1 ? <Step1 form={form} set={set} errors={errors} /> : <Step2 form={form} set={set} errors={errors} />}
+            {step === 1 ? <Step1 form={form} set={set} errors={errors} lang={lang} /> : <Step2 form={form} set={set} errors={errors} lang={lang} />}
 
             <div className="flex gap-4 mt-12">
               {step === 2 && (
@@ -606,7 +970,7 @@ export default function App() {
                   onClick={() => setStep(1)}
                   className="flex-1 px-8 py-4 rounded-full border border-gray-200 dark:border-white/10 text-gray-500 font-bold uppercase tracking-widest text-[11px] hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
                 >
-                  Назад
+                  {t('form_btn_back')}
                 </button>
               )}
               <button
@@ -614,7 +978,7 @@ export default function App() {
                 disabled={sending}
                 className="flex-[2] bg-primary text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-[11px] gold-shimmer shadow-lg shadow-primary/20 disabled:opacity-50"
               >
-                {sending ? 'Отправка...' : step === 1 ? 'Далее' : 'Разместить запрос'}
+                {sending ? t('form_sending') : step === 1 ? t('form_btn_next') : t('form_btn_submit')}
               </button>
             </div>
           </div>
@@ -625,34 +989,34 @@ export default function App() {
 
   if (page === 'success') {
     return (
-      <Shell setPage={setPage}>
+      <Shell setPage={setPage} lang={lang} setLang={setLang}>
         <div className="max-w-3xl mx-auto px-6 py-24 text-center">
           <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-10 animate-fade">
             <span className="material-symbols-outlined text-primary text-5xl">check_circle</span>
           </div>
-          <h2 className="font-display text-4xl md:text-5xl mb-6 dark:text-white animate-fade" style={{ animationDelay: '0.1s' }}>Запрос опубликован!</h2>
+          <h2 className="font-display text-4xl md:text-5xl mb-6 dark:text-white animate-fade" style={{ animationDelay: '0.1s' }}>{t('success_title')}</h2>
           <div className="h-px w-24 bg-primary/50 mx-auto mb-10 animate-fade" style={{ animationDelay: '0.2s' }}></div>
           <p className="text-gray-500 dark:text-gray-400 text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed animate-fade" style={{ animationDelay: '0.3s' }}>
-            Ваше объявление уже появилось в закрытом Telegram-канале. Владельцы недвижимости скоро свяжутся с вами напрямую.
+            {t('success_desc')}
           </p>
 
           <div className="bg-primary/5 dark:bg-primary/[0.03] border border-primary/20 p-8 rounded-3xl mb-12 max-w-2xl mx-auto text-left flex gap-6 items-center animate-fade" style={{ animationDelay: '0.4s' }}>
             <div className="w-12 h-12 bg-white dark:bg-navy-900 rounded-full flex items-center justify-center shrink-0 shadow-sm border border-primary/10">
               <span className="material-symbols-outlined text-primary text-2xl">lightbulb</span>
             </div>
-            <p className="text-sm dark:text-gray-300 leading-relaxed">
-              <strong className="text-primary">Совет:</strong> Пока вы ждете предложений, вы можете подписаться на наш канал, чтобы следить за другими запросами и обновлениями рынка.
-            </p>
+            <div className="text-sm dark:text-gray-300 leading-relaxed">
+              <strong className="text-primary">{t('success_tip_title')}</strong> {t('success_tip_desc')}
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade" style={{ animationDelay: '0.5s' }}>
             <a href={`https://t.me/${TELEGRAM_CHANNEL_ID.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
               className="bg-primary text-white px-10 py-4 rounded-full text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 flex items-center justify-center gap-3">
-              Открыть Telegram
+              {t('success_btn_tg')}
               <span className="material-symbols-outlined text-xl">send</span>
             </a>
             <button onClick={reset} className="px-10 py-4 rounded-full text-[11px] font-bold uppercase tracking-widest border border-gray-200 dark:border-white/10 hover:border-primary/50 transition-all dark:text-gray-400">
-              На главную
+              {t('success_btn_home')}
             </button>
           </div>
         </div>
@@ -662,28 +1026,28 @@ export default function App() {
 
   if (page === 'error') {
     return (
-      <Shell setPage={setPage}>
+      <Shell setPage={setPage} lang={lang} setLang={setLang}>
         <div className="max-w-2xl mx-auto px-6 py-24 text-center">
           <div className="w-20 h-20 bg-red-50 dark:bg-red-950/20 rounded-full flex items-center justify-center mx-auto mb-10">
             <span className="material-symbols-outlined text-red-500 text-4xl">error</span>
           </div>
-          <h2 className="font-display text-3xl mb-6 dark:text-white">Не удалось отправить</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-10">При публикации запроса в Telegram произошла техническая ошибка.</p>
+          <h2 className="font-display text-3xl mb-6 dark:text-white">{t('error_title')}</h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-10">{t('error_desc')}</p>
 
           {errorMsg && (
             <div className="bg-red-50 dark:bg-red-950/10 border border-red-100 dark:border-red-900/40 p-6 rounded-2xl mb-10 text-left">
-              <div className="text-[10px] uppercase tracking-widest font-bold text-red-400 mb-2">Детали ошибки</div>
+              <div className="text-[10px] uppercase tracking-widest font-bold text-red-400 mb-2">{t('error_label_details')}</div>
               <code className="text-xs text-red-600 dark:text-red-400 break-all family-mono leading-relaxed">{errorMsg}</code>
             </div>
           )}
 
           <div className="bg-background-light dark:bg-navy-950/50 border border-gray-100 dark:border-white/5 p-8 rounded-3xl text-left mb-12">
-            <h4 className="text-sm font-bold uppercase tracking-widest text-navy-950 dark:text-gray-100 mb-6">Действие не выполнено</h4>
+            <h4 className="text-sm font-bold uppercase tracking-widest text-navy-950 dark:text-gray-100 mb-6">{t('error_label_failed')}</h4>
             <p className="text-sm text-gray-400 leading-relaxed mb-6 italic">
-              "Качество — это когда возвращается покупатель, а не товар. Мы стремимся к совершенству в каждом запросе."
+              {t('error_quote')}
             </p>
             <div className="text-[10px] uppercase tracking-[0.2em] text-gray-400 border-t border-gray-100 dark:border-white/5 pt-6">
-              Пожалуйста, проверьте настройки API и попробуйте позже.
+              {t('error_footer')}
             </div>
           </div>
 
@@ -692,7 +1056,7 @@ export default function App() {
             className="bg-primary text-white px-10 py-4 rounded-full text-[11px] font-bold uppercase tracking-widest gold-shimmer shadow-lg shadow-primary/20 flex items-center justify-center gap-3 mx-auto"
           >
             <span className="material-symbols-outlined text-xl">undo</span>
-            Попробовать снова
+            {t('error_btn_retry')}
           </button>
         </div>
       </Shell>
