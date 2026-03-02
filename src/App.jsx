@@ -120,6 +120,20 @@ const TRANSLATIONS = {
     seo_block_li3: 'Инвестиции в недвижимость Турции с высокой доходностью.',
     seo_block_li4: 'Эксклюзивные виллы и пентхаусы, недоступные на открытых площадках.',
     seller_img_alt: 'Современная роскошная архитектура в Анталье',
+    faq_title: "Часто задаваемые вопросы",
+    faq_subtitle: "Всё, что нужно знать об аренде и покупке жилья в Турции",
+    faq_q1: "Как найти квартиру в Турции без посредников?",
+    faq_a1: "EvBulsun работает как реверсивный маркетплейс: вы описываете свои требования, и владельцы сами выходят на вас напрямую. Это исключает агентские комиссии и длительные переговоры через третьих лиц.",
+    faq_q2: "Сколько стоит аренда квартиры в Стамбуле для иностранцев в 2025 году?",
+    faq_a2: "Стоимость аренды в Стамбуле варьируется от $400–600 в месяц за студию в спальных районах до $1500–3000 за апартаменты в центре (Бешикташ, Нишанташы, Кадыкёй). Через EvBulsun вы получаете предложения в рамках вашего бюджета напрямую от владельцев.",
+    faq_q3: "Можно ли иностранцу купить квартиру в Турции?",
+    faq_a3: "Да, граждане большинства стран, включая Россию, Украину, Беларусь и страны ЕС, могут приобретать недвижимость в Турции. При покупке от $400 000 возможно получение турецкого гражданства. EvBulsun поможет найти объект под ваши цели.",
+    faq_q4: "Как быстро владельцы отвечают на запрос?",
+    faq_a4: "Запрос публикуется в закрытой сети немедленно после отправки. Как правило, первые предложения поступают в течение нескольких часов. Срочные запросы (отмечаются флагом 🔥) обрабатываются в приоритетном порядке.",
+    faq_q5: "В каких городах Турции работает EvBulsun?",
+    faq_a5: "Сервис охватывает все крупные города: Стамбул, Анталья, Аланья, Измир, Анкара, Бурса, Мерсин, Трабзон, Газиантеп. Если вашего города нет в списке — выберите 'Другой' и укажите название в описании.",
+    faq_q6: "Безопасно ли передавать свои контакты через EvBulsun?",
+    faq_a6: "Вы сами выбираете, какой контакт показывать: Telegram (без раскрытия номера телефона), WhatsApp или email. Ваши данные не передаются третьим лицам и не используются в рекламных целях.",
   },
   en: {
     nav_objects: 'Properties',
@@ -228,6 +242,20 @@ const TRANSLATIONS = {
     seo_block_li3: 'Real estate investment in Turkey with high returns.',
     seo_block_li4: 'Exclusive villas and penthouses not available on public platforms.',
     seller_img_alt: 'Modern luxury architecture in Antalya',
+    faq_title: "Frequently Asked Questions",
+    faq_subtitle: "Everything you need to know about renting and buying property in Turkey",
+    faq_q1: "How to find an apartment in Turkey without agents?",
+    faq_a1: "EvBulsun operates as a reverse marketplace: you describe your requirements and property owners contact you directly. This eliminates agency fees and lengthy negotiations through intermediaries.",
+    faq_q2: "How much does it cost to rent an apartment in Istanbul for foreigners in 2025?",
+    faq_a2: "Rental prices in Istanbul range from $400–600/month for a studio in residential districts to $1,500–3,000 for apartments in central areas (Besiktas, Nisantasi, Kadikoy). Through EvBulsun you receive offers within your budget directly from owners.",
+    faq_q3: "Can a foreigner buy property in Turkey?",
+    faq_a3: "Yes, citizens of most countries including Russia, Ukraine, Belarus and EU nations can purchase real estate in Turkey. Buying property worth $400,000+ may qualify for Turkish citizenship. EvBulsun helps find the right property for your goals.",
+    faq_q4: "How quickly do owners respond to a request?",
+    faq_a4: "Your request is published in the closed network immediately after submission. Typically, first offers arrive within a few hours. Urgent requests (marked with 🔥) are prioritized.",
+    faq_q5: "Which cities in Turkey does EvBulsun cover?",
+    faq_a5: "The service covers all major cities: Istanbul, Antalya, Alanya, Izmir, Ankara, Bursa, Mersin, Trabzon, Gaziantep. If your city is not listed, select 'Other' and specify the name in the description.",
+    faq_q6: "Is it safe to share my contacts through EvBulsun?",
+    faq_a6: "You choose which contact to display: Telegram (without revealing your phone number), WhatsApp, or email. Your data is not shared with third parties or used for advertising purposes.",
   },
   tr: {
     nav_objects: 'Mülkler',
@@ -748,6 +776,69 @@ function Shell({ children, setPage, lang, setLang }) {
 
 // ─── Главная страница ───────────────────────────────────────────────────────
 
+// ─── FAQ Секция ──────────────────────────────────────────────────────────────
+
+function FAQSection({ lang }) {
+  const [activeIndex, setActiveIndex] = useState(null)
+  const t = (key) => TRANSLATIONS[lang][key] || key
+
+  const faqs = [1, 2, 3, 4, 5, 6].map(i => ({
+    q: t(`faq_q${i}`),
+    a: t(`faq_a${i}`)
+  }))
+
+  return (
+    <section className="py-32 px-6 bg-white dark:bg-navy-950 overflow-hidden relative">
+      <div className="max-w-4xl mx-auto relative z-10">
+        <div className="text-center mb-20">
+          <h2 className="font-display text-4xl md:text-5xl mb-6 dark:text-white leading-tight">
+            {t('faq_title')}
+          </h2>
+          <div className="h-px w-24 bg-primary/50 mx-auto mb-8"></div>
+          <p className="text-gray-500 dark:text-gray-400 text-lg font-light max-w-2xl mx-auto">
+            {t('faq_subtitle')}
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          {faqs.map((faq, idx) => (
+            <div
+              key={idx}
+              className={`border rounded-2xl transition-all duration-300 ${activeIndex === idx
+                  ? 'border-primary/40 bg-primary/[0.02] dark:bg-primary/[0.01]'
+                  : 'border-gray-100 dark:border-white/5 hover:border-primary/20 bg-white dark:bg-navy-900/50'
+                }`}
+            >
+              <button
+                onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}
+                className="w-full px-8 py-6 flex items-center justify-between text-left group"
+              >
+                <span className={`font-display text-lg md:text-xl transition-colors duration-300 ${activeIndex === idx ? 'text-primary' : 'dark:text-white group-hover:text-primary'
+                  }`}>
+                  {faq.q}
+                </span>
+                <span className={`material-symbols-outlined text-primary transition-transform duration-500 ${activeIndex === idx ? 'rotate-180' : ''
+                  }`}>
+                  expand_more
+                </span>
+              </button>
+
+              <div className={`overflow-hidden transition-all duration-500 ease-in-out ${activeIndex === idx ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                <div className="px-8 pb-8 pt-0">
+                  <p className="text-gray-600 dark:text-gray-400 font-light leading-relaxed">
+                    {faq.a}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function Home({ setPage, lang }) {
   const t = (key, params = {}) => {
     let text = TRANSLATIONS[lang][key] || key
@@ -830,6 +921,8 @@ function Home({ setPage, lang }) {
           </div>
         </div>
       </section>
+
+      <FAQSection lang={lang} />
 
       {/* Privacy Section */}
       <section className="pb-32 px-6">
@@ -951,6 +1044,33 @@ export default function App() {
     const ogDesc = document.querySelector('meta[property="og:description"]')
     if (ogDesc) ogDesc.setAttribute('content', desc)
   }, [lang])
+
+  useEffect(() => {
+    // FAQ Schema.org JSON-LD (Strictly RU version as requested)
+    const existing = document.getElementById('faq-schema')
+    if (existing) existing.remove()
+
+    const script = document.createElement('script')
+    script.id = 'faq-schema'
+    script.type = 'application/ld+json'
+
+    const questions = [1, 2, 3, 4, 5, 6].map(i => ({
+      "@type": "Question",
+      "name": TRANSLATIONS.ru[`faq_q${i}`],
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": TRANSLATIONS.ru[`faq_a${i}`]
+      }
+    }))
+
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": questions
+    })
+
+    document.head.appendChild(script)
+  }, [])
 
   const t = (key, params = {}) => {
     let text = TRANSLATIONS[lang][key] || key
